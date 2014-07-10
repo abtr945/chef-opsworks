@@ -104,7 +104,7 @@ if node[:opsworks][:instance][:hostname] == "master"
       user "hduser"
       code <<-EOH
         sshpass -p "password" scp -o StrictHostKeyChecking=no /home/hduser/.ssh/id_rsa.pub hduser@#{hosts[ip]}:/tmp
-        sshpass -p "password" ssh -o StrictHostKeyChecking=no hduser@#{hosts[ip]} "(mkdir -p .ssh; touch .ssh/authorized_keys; grep #{node[:opsworks][:instance][:private_dns_name]} .ssh/authorized_keys > /dev/null || cat /tmp/id_rsa.pub >> .ssh/authorized_keys; rm /tmp/id_rsa.pub)"
+        sshpass -p "password" ssh -o StrictHostKeyChecking=no hduser@#{hosts[ip]} "(mkdir -p .ssh; touch .ssh/authorized_keys; grep #{node[:opsworks][:instance][:hostname]} .ssh/authorized_keys > /dev/null || cat /tmp/id_rsa.pub >> .ssh/authorized_keys; rm /tmp/id_rsa.pub)"
       EOH
     end
   end
