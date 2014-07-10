@@ -103,7 +103,7 @@ if node[:opsworks][:instance][:hostname] == "master"
       interpreter "bash"
       user "hduser"
       code <<-EOH
-        sshpass -p "password" ssh-copy-id -i /home/hduser/.ssh/id_rsa.pub hduser@{ip}
+        sshpass -p "password" ssh-copy-id -i /home/hduser/.ssh/id_rsa.pub hduser@#{hosts[ip]}
       EOH
     end
   end
