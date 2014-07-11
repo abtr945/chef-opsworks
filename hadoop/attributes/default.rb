@@ -1,3 +1,4 @@
+default[:Hadoop][:Core][:version] = "2.4.1"
 default[:Hadoop][:Core][:hadoopNamenodeDir] = "/home/hduser/hdfs/namenode"
 default[:Hadoop][:Core][:hadoopDatanodeDir] = "/home/hduser/hdfs/datanode"
 override[:java][:install_flavor] = "oracle"

@@ -129,13 +129,17 @@ end
 script "download_unpack_hadoop" do
   interpreter "bash"
   user "root"
-  cwd "/home/hduser"
+  cwd "/tmp"
   code <<-EOH
-  wget http://www.interior-dsgn.com/apache/hadoop/common/hadoop-2.4.0/hadoop-2.4.0.tar.gz
-  sudo tar -xf hadoop-2.4.0.tar.gz -C /usr/local
-  sudo ln -s /usr/local/hadoop-2.4.0 /usr/local/hadoop  
-  sudo chown -R hduser:hadoop /usr/local/hadoop-2.4.0
+  wget http://www.interior-dsgn.com/apache/hadoop/common/hadoop-#{node[:Hadoop][:Core][:version]}/hadoop-#{node[:Hadoop][:Core][:version]}.tar.gz
+  tar -xf hadoop-#{node[:Hadoop][:Core][:version]}.tar.gz -C /usr/local
+  ln -s /usr/local/hadoop-#{node[:Hadoop][:Core][:version]} /usr/local/hadoop  
+  chown -R hduser:hadoop /usr/local/hadoop-#{node[:Hadoop][:Core][:version]}
   EOH
+end
+
+file "/tmp/hadoop-#{node[:Hadoop][:Core][:version]}.tar.gz" do
+  action :delete
 end
 
 log "complete_6" do
