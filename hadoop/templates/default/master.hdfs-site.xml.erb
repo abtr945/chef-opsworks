@@ -17,6 +17,7 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+
 	<property>
         <name>dfs.datanode.data.dir</name>
         <value>file:///home/hduser/hdfs/datanode</value>
@@ -33,16 +34,5 @@
         <name>dfs.replication</name>
         <value><%= @dfsReplication %></value>
     </property>
-    <property>
-        <name>dfs.permissions</name>
-        <value>false</value>
-    </property>
-    <property>
-        <name>dfs.datanode.use.datanode.hostname</name>
-        <value>false</value>
-    </property>
-    <property>
-        <name>dfs.namenode.datanode.registration.ip-hostname-check</name>
-        <value>false</value>
-    </property>
+    
 </configuration>

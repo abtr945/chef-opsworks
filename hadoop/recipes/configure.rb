@@ -122,3 +122,21 @@ else
   end
   
 end
+
+
+# Step 4: Delete the 127.0.1.1 loopback address mapping in /etc/hosts
+
+log "start_4" do
+  message "<AN_TRAN> STEP 4: Delete the 127.0.1.1 loopback address mapping in /etc/hosts started"
+  level :info
+end
+
+execute "delete_loopback_hosts" do
+  user "root"
+  command "sed -i '/^127\.0\.1\.1.*$/ d' /etc/hosts"
+end
+
+log "complete_1" do
+  message "<AN_TRAN> STEP 4: Delete the 127.0.1.1 loopback address mapping in /etc/hosts completed"
+  level :info
+end

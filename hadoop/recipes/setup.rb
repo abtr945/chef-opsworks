@@ -73,11 +73,24 @@ log "start_4" do
   level :info
 end
 
-template "/home/hduser/.bashrc" do
-  owner "hduser"
-  group "hadoop"
-  mode "0644"
-  source "bashrc.erb"
+if node[:opsworks][:instance][:hostname] == "master"
+
+  template "/home/hduser/.bashrc" do
+    owner "hduser"
+    group "hadoop"
+    mode "0644"
+    source "spark.bashrc.erb"
+  end
+
+else
+
+  template "/home/hduser/.bashrc" do
+    owner "hduser"
+    group "hadoop"
+    mode "0644"
+    source "bashrc.erb"
+  end
+
 end
 
 log "complete_4" do
@@ -111,7 +124,7 @@ if node[:opsworks][:instance][:hostname] == "master"
 
 else
 
-  log "not_master" do
+  log "ssh_not_master" do
     message "<AN_TRAN> STEP 5: (Master only) Create SSH Public Key - This is not a master node, do nothing"
     level :info
   end
@@ -183,8 +196,16 @@ template "/usr/local/hadoop/etc/hadoop/core-site.xml" do
   source "core-site.xml.erb"
 end
 
+template "/usr/local/hadoop/etc/hadoop/yarn-site.xml" do
+  owner "hduser"
+  group "hadoop"
+  mode "0644"
+  source "yarn-site.xml.erb"
+end
+
 if node[:opsworks][:instance][:hostname] == "master"
 
+  # Setup phase use default dfs.replication value of 3
   template "/usr/local/hadoop/etc/hadoop/hdfs-site.xml" do
     owner "hduser"
     group "hadoop"
@@ -197,6 +218,7 @@ if node[:opsworks][:instance][:hostname] == "master"
   
 else
 
+  # Setup phase use default dfs.replication value of 3
   template "/usr/local/hadoop/etc/hadoop/hdfs-site.xml" do
     owner "hduser"
     group "hadoop"
@@ -252,4 +274,40 @@ end
 log "complete_9" do
   message "<AN_TRAN> STEP 9: Create data directories completed"
   level :info
+end
+
+
+# Step 10: (Master only) Install Apache Spark on Master node
+
+if node[:opsworks][:instance][:hostname] == "master"
+
+  log "start_10" do
+    message "<AN_TRAN> STEP 10: (Master only) Install Apache Spark on Master node started"
+    level :info
+  end
+  
+  script "download_unpack_spark" do
+    interpreter "bash"
+    user "root"
+    cwd "/tmp"
+    code <<-EOH
+    wget http://d3kbcqa49mib13.cloudfront.net/spark-1.0.1-bin-hadoop2.tgz
+    tar -xf spark-1.0.1-bin-hadoop2.tgz -C /usr/local
+    ln -s /usr/local/spark-1.0.1-bin-hadoop2 /usr/local/spark
+    chown -R hduser:hadoop /usr/local/spark-1.0.1-bin-hadoop2
+    EOH
+  end
+  
+  log "complete_10" do
+    message "<AN_TRAN> STEP 10: (Master only) Install Apache Spark on Master node completed"
+    level :info
+  end
+  
+else
+
+  log "spark_not_master" do
+    message "<AN_TRAN> STEP 10: (Master only) Install Apache Spark - This is not a master node, do nothing"
+    level :info
+  end
+
 end
