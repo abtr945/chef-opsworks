@@ -136,7 +136,76 @@ execute "delete_loopback_hosts" do
   command "sed -i '/^127\.0\.1\.1.*$/ d' /etc/hosts"
 end
 
-log "complete_1" do
+log "complete_4" do
   message "<AN_TRAN> STEP 4: Delete the 127.0.1.1 loopback address mapping in /etc/hosts completed"
+  level :info
+end
+
+
+# ------------------------- CONFIGURE APACHE HBASE ----------------------------
+
+
+# Step 5: Populate the List of HBase Regionservers
+
+log "start_5" do
+  message "<AN_TRAN> STEP 5: Populate the List of HBase Regionservers started"
+  level :info
+end
+
+template "/usr/local/hbase/conf/regionservers" do
+  owner "hduser"
+  group "hadoop"
+  mode "0644"
+  source "regionservers.erb"
+  variables({
+    :masters => masters,
+    :slaves => slaves
+  })
+end
+
+log "complete_5" do
+  message "<AN_TRAN> STEP 5: Populate the List of HBase Regionservers completed"
+  level :info
+end
+
+
+# Step 6: Populate the Zookeeper Quorum
+
+log "start_6" do
+  message "<AN_TRAN> STEP 6: Populate the Zookeeper Quorum started"
+  level :info
+end
+
+# The number of nodes in the Zookeeper quorum should be odd
+quorumString = "master"
+
+if node[:opsworks][:layers][:hadoop][:instances].length >= node[:HBase][:Core][:zookeeperQuorumSize]
+
+  numberNodesQuorum = 1
+
+  slaves.keys.sort.each do |ip| 
+    if numberNodesQuorum >= node[:HBase][:Core][:zookeeperQuorumSize]
+      break
+    else
+      quorumString << ","
+      quorumString << slaves[ip]
+      numberNodesQuorum = numberNodesQuorum + 1
+    end 
+  end
+    
+end
+
+template "/usr/local/hbase/conf/hbase-site.xml" do
+  owner "hduser"
+  group "hadoop"
+  mode "0644"
+  source "hbase-site.xml.erb"
+  variables({
+    :zookeeperQuorum => quorumString
+  })
+end
+
+log "complete_6" do
+  message "<AN_TRAN> STEP 6: Populate the Zookeeper Quorum completed"
   level :info
 end

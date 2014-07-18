@@ -277,6 +277,9 @@ log "complete_9" do
 end
 
 
+# ----------------------- INSTALL APACHE SPARK ---------------------------
+
+
 # Step 10: (Master only) Install Apache Spark on Master node
 
 if node[:opsworks][:instance][:hostname] == "master"
@@ -310,4 +313,90 @@ else
     level :info
   end
 
+end
+
+
+# ----------------------- INSTALL APACHE HBASE ---------------------------
+
+
+# Step 11: Install Apache HBase
+
+log "start_11" do
+  message "<AN_TRAN> STEP 11: Install Apache HBase started"
+  level :info
+end
+
+script "download_unpack_hbase" do
+  interpreter "bash"
+  user "root"
+  cwd "/tmp"
+  code <<-EOH
+  wget http://apache.mirror.uber.com.au/hbase/hbase-0.98.3/hbase-0.98.3-hadoop2-bin.tar.gz
+  tar -xf hbase-0.98.3-hadoop2-bin.tar.gz -C /usr/local
+  ln -s /usr/local/hbase-0.98.3-hadoop2-bin /usr/local/hbase
+  chown -R hduser:hadoop /usr/local/hbase-0.98.3-hadoop2-bin
+  EOH
+end
+
+log "complete_11" do
+  message "<AN_TRAN> STEP 11: Install Apache HBase completed"
+  level :info
+end
+
+
+# Step 12: Configure HBase and Zookeeper
+
+log "start_12" do
+  message "<AN_TRAN> STEP 12: Configure HBase and Zookeeper started"
+  level :info
+end
+
+template "/usr/local/hbase/conf/hbase-env.sh" do
+  owner "hduser"
+  group "hadoop"
+  mode "0644"
+  source "hbase-env.sh.erb"
+end
+
+# Initialize Zookeeper quorum to just "master" node
+template "/usr/local/hbase/conf/hbase-site.xml" do
+  owner "hduser"
+  group "hadoop"
+  mode "0644"
+  source "hbase-site.xml.erb"
+  variables({
+    :zookeeperQuorum => "master"
+  })
+end
+
+# Create symlink to hdfs-site.xml
+execute "create_hdfs_symlink" do
+  user "root"
+  command "ln -s /usr/local/hadoop/etc/hadoop/hdfs-site.xml /usr/local/hbase/conf/hdfs-site.xml"
+end
+
+log "complete_12" do
+  message "<AN_TRAN> STEP 12: Configure HBase and Zookeeper completed"
+  level :info
+end
+
+
+# Step 13: Create Zookeeper data directory
+
+log "start_13" do
+  message "<AN_TRAN> STEP 13: Create Zookeeper data directory started"
+  level :info
+end
+
+directory node[:HBase][:Core][:zookeeperDir] do
+  owner "hduser"
+  group "hadoop"
+  mode "0770"
+  recursive true
+  action :create
+end
+
+log "complete_13" do
+  message "<AN_TRAN> STEP 13: Create Zookeeper data directory completed"
+  level :info
 end
