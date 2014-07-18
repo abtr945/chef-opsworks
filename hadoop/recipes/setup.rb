@@ -333,8 +333,8 @@ script "download_unpack_hbase" do
   code <<-EOH
   wget http://apache.mirror.uber.com.au/hbase/hbase-0.98.3/hbase-0.98.3-hadoop2-bin.tar.gz
   tar -xf hbase-0.98.3-hadoop2-bin.tar.gz -C /usr/local
-  ln -s /usr/local/hbase-0.98.3-hadoop2-bin /usr/local/hbase
-  chown -R hduser:hadoop /usr/local/hbase-0.98.3-hadoop2-bin
+  ln -s /usr/local/hbase-0.98.3-hadoop2 /usr/local/hbase
+  chown -R hduser:hadoop /usr/local/hbase-0.98.3-hadoop2
   EOH
 end
 
