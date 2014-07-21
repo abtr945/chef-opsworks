@@ -400,3 +400,95 @@ log "complete_13" do
   message "<AN_TRAN> STEP 13: Create Zookeeper data directory completed"
   level :info
 end
+
+
+# Step 14: Replace Hadoop bundled JARs in HBase lib with latest version
+
+log "start_14" do
+  message "<AN_TRAN> STEP 14: Replace Hadoop bundled JARs in HBase lib with latest version started"
+  level :info
+end
+
+hadoop_jars_old = [ "hadoop-annotations-2.2.0.jar", 
+				   	"hadoop-auth-2.2.0.jar", 
+				   	"hadoop-client-2.2.0.jar", 
+				   	"hadoop-common-2.2.0.jar", 
+				   	"hadoop-hdfs-2.2.0.jar", 
+				   	"hadoop-hdfs-2.2.0-tests.jar", 
+				   	"hadoop-mapreduce-client-app-2.2.0.jar", 
+				   	"hadoop-mapreduce-client-common-2.2.0.jar", 
+					"hadoop-mapreduce-client-core-2.2.0.jar", 
+					"hadoop-mapreduce-client-jobclient-2.2.0.jar", 
+					"hadoop-mapreduce-client-jobclient-2.2.0-tests.jar", 
+					"hadoop-mapreduce-client-shuffle-2.2.0.jar", 
+					"hadoop-yarn-api-2.2.0.jar", 
+					"hadoop-yarn-client-2.2.0.jar", 
+					"hadoop-yarn-common-2.2.0.jar", 
+					"hadoop-yarn-server-common-2.2.0.jar", 
+					"hadoop-yarn-server-nodemanager-2.2.0.jar" ]
+					
+hadoop_jars_new = [ "hadoop-annotations-#{node[:Hadoop][:Core][:version]}.jar", 
+				   	"hadoop-auth-#{node[:Hadoop][:Core][:version]}.jar", 
+				   	"hadoop-client-#{node[:Hadoop][:Core][:version]}.jar", 
+				   	"hadoop-common-#{node[:Hadoop][:Core][:version]}.jar", 
+				   	"hadoop-hdfs-#{node[:Hadoop][:Core][:version]}.jar", 
+				   	"hadoop-hdfs-#{node[:Hadoop][:Core][:version]}-tests.jar", 
+				   	"hadoop-mapreduce-client-app-#{node[:Hadoop][:Core][:version]}.jar", 
+				   	"hadoop-mapreduce-client-common-#{node[:Hadoop][:Core][:version]}.jar", 
+					"hadoop-mapreduce-client-core-#{node[:Hadoop][:Core][:version]}.jar", 
+					"hadoop-mapreduce-client-jobclient-#{node[:Hadoop][:Core][:version]}.jar", 
+					"hadoop-mapreduce-client-jobclient-#{node[:Hadoop][:Core][:version]}-tests.jar", 
+					"hadoop-mapreduce-client-shuffle-#{node[:Hadoop][:Core][:version]}.jar", 
+					"hadoop-yarn-api-#{node[:Hadoop][:Core][:version]}.jar", 
+					"hadoop-yarn-client-#{node[:Hadoop][:Core][:version]}.jar", 
+					"hadoop-yarn-common-#{node[:Hadoop][:Core][:version]}.jar", 
+					"hadoop-yarn-server-common-#{node[:Hadoop][:Core][:version]}.jar", 
+					"hadoop-yarn-server-nodemanager-#{node[:Hadoop][:Core][:version]}.jar" ]
+
+script "copy_new_hadoop_jars_directory" do
+  interpreter "bash"
+  user "root"
+  cwd "/tmp"
+  code <<-EOH
+  cp -r /usr/local/hadoop/share/hadoop /tmp
+  mkdir flatten
+  wget -P /tmp/flatten/ http://central.maven.org/maven2/org/apache/hadoop/hadoop-client/#{node[:Hadoop][:Core][:version]}/hadoop-client-#{node[:Hadoop][:Core][:version]}.jar
+  EOH
+end
+
+script "flatten_new_hadoop_jars_directory" do
+  interpreter "bash"
+  user "root"
+  cwd "/tmp/hadoop"
+  code <<-EOH
+  find ./ -mindepth 2 -type f -exec mv '{}' /tmp/flatten \;
+  EOH
+end
+
+hadoop_jars_old.each do |jar_old|
+  execute "remove_#{jar_old}" do
+    user "root"
+    command "rm -f /usr/local/hbase/lib/#{jar_old}"
+  end
+end
+
+hadoop_jars_new.each do |jar_new|
+  execute "replace_with_#{jar_new}" do
+    user "root"
+    command "mv /tmp/flatten/#{jar_new} /usr/local/hbase/lib"
+  end
+end
+
+script "clean_up_new_hadoop_jars_tmp_directory" do
+  interpreter "bash"
+  user "root"
+  code <<-EOH
+  rm -rf /tmp/hadoop
+  rm -rf /tmp/flatten
+  EOH
+end
+
+log "complete_14" do
+  message "<AN_TRAN> STEP 14: Replace Hadoop bundled JARs in HBase lib with latest version completed"
+  level :info
+end
