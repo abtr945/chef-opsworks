@@ -456,13 +456,9 @@ script "copy_new_hadoop_jars_directory" do
   EOH
 end
 
-script "flatten_new_hadoop_jars_directory" do
-  interpreter "bash"
+execute "flatten_new_hadoop_jars_directory" do
   user "root"
-  cwd "/tmp/hadoop"
-  code <<-EOH
-  find ./ -mindepth 2 -type f -exec mv '{}' /tmp/flatten +
-  EOH
+  command "find /tmp/hadoop/ -mindepth 2 -type f -exec mv '{}' /tmp/flatten ';'"
 end
 
 hadoop_jars_old.each do |jar_old|
