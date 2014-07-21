@@ -461,7 +461,7 @@ script "flatten_new_hadoop_jars_directory" do
   user "root"
   cwd "/tmp/hadoop"
   code <<-EOH
-  find ./ -mindepth 2 -type f -exec mv '{}' /tmp/flatten ;
+  find ./ -mindepth 2 -type f -exec mv {} /tmp/flatten ;
   EOH
 end
 
