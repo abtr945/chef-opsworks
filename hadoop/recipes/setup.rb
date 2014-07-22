@@ -488,3 +488,38 @@ log "complete_14" do
   message "<AN_TRAN> STEP 14: Replace Hadoop bundled JARs in HBase lib with latest version completed"
   level :info
 end
+
+
+# Step 15: (Master only) Download Wikipedia sample pagecounts data
+
+if node[:opsworks][:instance][:hostname] == "master"
+
+  log "start_15" do
+    message "<AN_TRAN> STEP 15: (Master only) Download Wikipedia sample pagecounts data started"
+    level :info
+  end
+
+  script "download_wikipedia_pagecounts_data" do
+    interpreter "bash"
+    user "root"
+    cwd "/home/hduser"
+    code <<-EOH
+    wget http://dumps.wikimedia.org/other/pagecounts-raw/2014/2014-01/pagecounts-20140107-160000.gz
+    gzip -d pagecounts-20140107-160000.gz
+    mv pagecounts-20140107-160000 pagecounts
+    EOH
+  end
+
+  log "complete_15" do
+    message "<AN_TRAN> STEP 15: (Master only) Download Wikipedia sample pagecounts data completed"
+    level :info
+  end
+
+else
+
+  log "pagecounts_data_not_master" do
+    message "<AN_TRAN> STEP 15: (Master only) Download Wikipedia sample pagecounts data - This is not a master node, do nothing"
+    level :info
+  end
+
+end
