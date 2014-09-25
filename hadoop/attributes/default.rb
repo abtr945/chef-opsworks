@@ -1,4 +1,4 @@
-default[:Hadoop][:Core][:version] = "2.4.1"
+default[:Hadoop][:Core][:version] = "2.5.1"
 default[:Hadoop][:Core][:hadoopNamenodeDir] = "/home/hduser/hdfs/namenode"
 default[:Hadoop][:Core][:hadoopDatanodeDir] = "/home/hduser/hdfs/datanode"
 default[:HBase][:Core][:zookeeperDir] = "/home/hduser/zookeeper"
