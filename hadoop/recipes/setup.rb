@@ -294,10 +294,10 @@ if node[:opsworks][:instance][:hostname] == "master"
     user "root"
     cwd "/tmp"
     code <<-EOH
-    wget http://d3kbcqa49mib13.cloudfront.net/spark-1.0.1-bin-hadoop2.tgz
-    tar -xf spark-1.0.1-bin-hadoop2.tgz -C /usr/local
-    ln -s /usr/local/spark-1.0.1-bin-hadoop2 /usr/local/spark
-    chown -R hduser:hadoop /usr/local/spark-1.0.1-bin-hadoop2
+    wget http://d3kbcqa49mib13.cloudfront.net/spark-1.1.0-bin-hadoop2.4.tgz
+    tar -xf spark-1.1.0-bin-hadoop2.4.tgz -C /usr/local
+    ln -s /usr/local/spark-1.1.0-bin-hadoop2.4 /usr/local/spark
+    chown -R hduser:hadoop /usr/local/spark-1.1.0-bin-hadoop2.4
     EOH
   end
   
