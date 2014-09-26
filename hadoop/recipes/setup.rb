@@ -144,7 +144,7 @@ script "download_unpack_hadoop" do
   user "root"
   cwd "/tmp"
   code <<-EOH
-  wget http://www.interior-dsgn.com/apache/hadoop/common/hadoop-#{node[:Hadoop][:Core][:version]}/hadoop-#{node[:Hadoop][:Core][:version]}.tar.gz
+  wget http://apache.mirror.serversaustralia.com.au/hadoop/common/hadoop-#{node[:Hadoop][:Core][:version]}/hadoop-#{node[:Hadoop][:Core][:version]}.tar.gz
   tar -xf hadoop-#{node[:Hadoop][:Core][:version]}.tar.gz -C /usr/local
   ln -s /usr/local/hadoop-#{node[:Hadoop][:Core][:version]} /usr/local/hadoop  
   chown -R hduser:hadoop /usr/local/hadoop-#{node[:Hadoop][:Core][:version]}
@@ -294,10 +294,10 @@ if node[:opsworks][:instance][:hostname] == "master"
     user "root"
     cwd "/tmp"
     code <<-EOH
-    wget http://d3kbcqa49mib13.cloudfront.net/spark-1.1.0-bin-hadoop2.4.tgz
-    tar -xf spark-1.1.0-bin-hadoop2.4.tgz -C /usr/local
-    ln -s /usr/local/spark-1.1.0-bin-hadoop2.4 /usr/local/spark
-    chown -R hduser:hadoop /usr/local/spark-1.1.0-bin-hadoop2.4
+    wget http://d3kbcqa49mib13.cloudfront.net/spark-#{node[:Spark][:Core][:version]}.tgz
+    tar -xf spark-#{node[:Spark][:Core][:version]}.tgz -C /usr/local
+    ln -s /usr/local/spark-#{node[:Spark][:Core][:version]} /usr/local/spark
+    chown -R hduser:hadoop /usr/local/spark-#{node[:Spark][:Core][:version]}
     EOH
   end
   
@@ -331,10 +331,10 @@ script "download_unpack_hbase" do
   user "root"
   cwd "/tmp"
   code <<-EOH
-  wget http://apache.mirror.uber.com.au/hbase/hbase-0.98.3/hbase-0.98.3-hadoop2-bin.tar.gz
-  tar -xf hbase-0.98.3-hadoop2-bin.tar.gz -C /usr/local
-  ln -s /usr/local/hbase-0.98.3-hadoop2 /usr/local/hbase
-  chown -R hduser:hadoop /usr/local/hbase-0.98.3-hadoop2
+  wget http://apache.mirror.uber.com.au/hbase/hbase-#{node[:HBase][:Core][:version]}/hbase-#{node[:HBase][:Core][:version]}-bin.tar.gz
+  tar -xf hbase-#{node[:HBase][:Core][:version]}-bin.tar.gz -C /usr/local
+  ln -s /usr/local/hbase-#{node[:HBase][:Core][:version]} /usr/local/hbase
+  chown -R hduser:hadoop /usr/local/hbase-#{node[:HBase][:Core][:version]}
   EOH
 end
 
